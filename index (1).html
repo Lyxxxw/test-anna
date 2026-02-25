@@ -9,10 +9,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        :root { --brand-gold:#b0955b; --bg-cream:#f3eee4; --forest-green:#17433a; --pure-white:#ffffff; --deep-black:#0a0a0b; }
+        :root { --brand-gold:#b0955b; --bg-cream:#f3eee4; --forest-green:#17433a; --sage-green:#99b2ac; --deep-black:#0a0a0b; }
         body { font-family:'Inter',sans-serif; background-color:var(--bg-cream); color:var(--deep-black); margin:0; -webkit-font-smoothing:antialiased; }
+        .glass-card { background:rgba(255,255,255,0.98); border:1px solid rgba(176,149,91,0.2); border-radius:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); }
         .nav-active { background-color:var(--forest-green); color:white!important; font-weight:700; }
-        .glass-card { background:rgba(255,255,255,0.98); border:1px solid rgba(176,149,91,0.2); border-radius:1.5rem; }
         .view-section { display: none; }
         .view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -23,12 +23,12 @@
 
 <div id="loading-screen" class="loading-screen">
     <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#b0955b] mb-4"></i>
-    <p class="text-xs font-bold text-[#17433a] uppercase tracking-widest">Securely Connecting to Google Sheets...</p>
+    <p id="status-text" class="text-xs font-bold text-[#17433a] uppercase tracking-widest">Accessing Secure Vault...</p>
 </div>
 
 <aside class="w-full md:w-80 bg-white border-r border-stone-200 flex flex-col z-30 shadow-2xl overflow-y-auto">
     <div class="p-8">
-        <div class="mb-10"><h1 class="text-2xl font-black text-[#17433a]">REAL <span class="text-[#b0955b]">INT'L</span></h1></div>
+        <div class="mb-10"><h1 class="text-2xl font-black text-[#17433a] italic">REAL <span class="text-[#b0955b]">INT'L</span></h1></div>
         <nav class="space-y-2">
             <button onclick="showSection('overview')" id="nav-overview" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm nav-active">
                 <i class="fa-solid fa-chart-line w-5"></i> Portfolio Snapshot
@@ -42,8 +42,8 @@
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-[#17433a] text-[#b0955b] flex items-center justify-center font-bold">AL</div>
             <div>
-                <p class="text-sm font-bold text-[#17433a]" id="side-client-name">Anna Li</p>
-                <p class="text-[10px] text-[#b0955b] font-black uppercase italic">Tier 1 VIP Investor</p>
+                <p class="text-sm font-bold text-[#17433a]" id="client-name-side">Loading...</p>
+                <p class="text-[10px] text-[#b0955b] font-black uppercase italic" id="client-tier-side">VIP Investor</p>
             </div>
         </div>
     </div>
@@ -54,18 +54,17 @@
         <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
             <h2 class="text-3xl font-black text-[#0a0a0b] uppercase italic tracking-tighter">Institutional <span class="text-[#b0955b]">Snapshot</span></h2>
             <div class="bg-[#17433a] px-10 py-6 rounded-3xl shadow-xl text-white border-b-4 border-[#b0955b]">
-                <p class="text-[#99b2ac] text-[10px] font-black uppercase italic mb-1">Total Active Principal</p>
-                <p class="text-4xl font-bold font-mono text-[#b0955b]" id="stat-total-principal">$0</p>
+                <p class="text-[#99b2ac] text-[10px] font-black uppercase italic mb-1">Active Net Principal</p>
+                <p class="text-4xl font-bold font-mono text-[#b0955b]" id="total-principal">$0</p>
             </div>
         </header>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="glass-card p-8 min-h-[300px]">
-                <h3 class="font-black text-sm uppercase italic text-[#17433a] mb-6">Allocation Analytics</h3>
+                <h3 class="font-black text-xs uppercase italic text-[#17433a] mb-6">Allocation Analytics</h3>
                 <canvas id="allocationChart"></canvas>
             </div>
             <div class="glass-card p-8 bg-white border border-stone-100 shadow-sm overflow-hidden">
-                <h3 class="font-black text-sm uppercase italic text-[#17433a] mb-4">Latest Insights</h3>
+                <h3 class="font-black text-xs uppercase italic text-[#17433a] mb-4">Latest Market Insights</h3>
                 <div id="news-container" class="space-y-4"></div>
             </div>
         </div>
@@ -78,75 +77,87 @@
 </main>
 
 <script>
-// 这里是你提供的部署链接 (ID: 317 的抓取逻辑已在后端写死)
-const API_URL = 'https://script.google.com/macros/s/AKfycbypu3K0avOrDhYCn310pH94jYz2pv6JWCvc92Bsxz_ay70hpozFpCkzz3NE6El3H6zGkA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypu3K0avOrDhYCn310pH94jYz2pv6JWCvc92Bsxz_ay70hpozFpCkzz3NE6El3H6zGkA/exec';
 
 function showSection(id) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
     document.getElementById('section-' + id).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active', 'text-stone-500'));
-    document.getElementById('nav-' + id).classList.add('nav-active');
 }
 
-async function loadData() {
+async function loadDashboard() {
+    const params = new URLSearchParams(window.location.search);
+    const clientId = params.get('id');
+    
+    if (!clientId) {
+        document.getElementById('status-text').innerHTML = "<span class='text-red-600'>ERROR: Please add ?id=317 to the URL</span>";
+        return;
+    }
+
     try {
-        const response = await fetch(`${API_URL}?id=317&token=Real2026`);
-        const result = await response.json();
+        const res = await fetch(`${APPS_SCRIPT_URL}?id=${clientId}&token=Real2026`);
+        const result = await res.json();
         
-        if (result.allSheets) {
-            const holdings = result.allSheets.holdings || [];
-            const client = result.allSheets.clients ? result.allSheets.clients[0] : null;
+        if (result.error) throw new Error(result.error);
 
-            // 1. 侧边栏名字
-            if(client) document.getElementById('side-client-name').innerText = client.name;
+        // 获取数据页签
+        const clientData = result.allSheets["clients"] ? result.allSheets["clients"][0] : null;
+        const holdings = result.allSheets["holdings"] || [];
+        const news = result.allSheets["news"] || [];
 
-            // 2. 总金额
-            let total = 0;
-            holdings.forEach(h => total += Number(h.principal || 0));
-            document.getElementById('stat-total-principal').innerText = '$' + total.toLocaleString();
-
-            // 3. 资产列表 (对应你表格里的项目)
-            const list = document.getElementById('portfolioList');
-            list.innerHTML = holdings.map(h => `
-                <div class="glass-card p-8 border-l-8 border-[#b0955b] bg-white">
-                    <div class="flex flex-col lg:flex-row gap-8 items-center">
-                        <div class="lg:w-1/4">
-                            <span class="text-[9px] font-black uppercase text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${h.type || 'ASSET'}</span>
-                            <h4 class="text-xl font-black text-[#0a0a0b] mt-2 italic uppercase">${h.project_name}</h4>
-                            <p class="text-sm font-bold text-[#17433a]">$${Number(h.principal).toLocaleString()}</p>
-                        </div>
-                        <div class="lg:w-2/4 w-full">
-                            <p class="text-[10px] font-bold text-[#717375] uppercase mb-2">Status: ${h.milestone3 || 'Active'}</p>
-                            <div class="flex gap-1.5">
-                                <div class="h-2 flex-1 rounded-full ${h.milestone1_status==='done'?'bg-[#17433a]':'bg-stone-200'}"></div>
-                                <div class="h-2 flex-1 rounded-full ${h.milestone2_status==='done'?'bg-[#17433a]':'bg-stone-200'}"></div>
-                                <div class="h-2 flex-1 rounded-full ${h.milestone3_status==='active'?'bg-[#b0955b]':'bg-stone-200'}"></div>
-                            </div>
-                        </div>
-                        <div class="lg:w-1/4">
-                            <p class="text-xs italic text-[#b0955b] font-bold text-right">"${h.details || ''}"</p>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            // 4. 饼图
-            renderChart(holdings);
-            
-            // 5. 新闻
-            const news = result.allSheets.news || [];
-            document.getElementById('news-container').innerHTML = news.map(n => `
-                <div class="p-4 bg-stone-50 rounded-xl border border-stone-100">
-                    <p class="text-[9px] font-black text-[#b0955b] uppercase mb-1">${n.date || 'LATEST'}</p>
-                    <h5 class="text-xs font-bold text-[#17433a]">${n.title || 'Market Update'}</h5>
-                </div>
-            `).join('');
+        // 渲染 UI
+        if (clientData) {
+            document.getElementById('client-name-side').innerText = clientData.name;
+            document.getElementById('client-tier-side').innerText = clientData.tier;
         }
+
+        let totalPrincipal = 0;
+        holdings.forEach(p => totalPrincipal += Number(p.principal || 0));
+        document.getElementById('total-principal').innerText = '$' + totalPrincipal.toLocaleString();
+
+        renderPortfolio(holdings);
+        renderNews(news);
+        renderChart(holdings);
+
         document.getElementById('loading-screen').style.display = 'none';
     } catch (e) {
-        console.error("Fetch Error:", e);
-        document.getElementById('loading-screen').innerHTML = `<p class='text-red-500'>Connection Error. Please check access.</p>`;
+        document.getElementById('status-text').innerHTML = `<span class='text-red-500'>Connection Failed: ${e.message}</span>`;
     }
+}
+
+function renderPortfolio(projects) {
+    const list = document.getElementById('portfolioList');
+    list.innerHTML = projects.map(p => `
+        <div class="glass-card p-8 border-l-8 border-[#b0955b] bg-white transition-all hover:translate-x-1">
+            <div class="flex flex-col lg:flex-row gap-8 items-center">
+                <div class="lg:w-1/4">
+                    <span class="text-[9px] font-black uppercase text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${p.type || 'PRIVATE DEBT'}</span>
+                    <h4 class="text-xl font-black text-[#0a0a0b] mt-3 uppercase italic tracking-tighter leading-none">${p.project_name}</h4>
+                    <p class="text-sm font-bold text-[#17433a] mt-1">$${Number(p.principal).toLocaleString()}</p>
+                </div>
+                <div class="lg:w-2/4 w-full">
+                    <p class="text-[9px] font-black text-[#717375] uppercase mb-2 italic">Phase Status: ${p.milestone3 || 'Active'}</p>
+                    <div class="flex gap-1">
+                        <div class="h-2 flex-1 rounded-full ${p.milestone1_status==='done'?'bg-[#17433a]':'bg-stone-200'}"></div>
+                        <div class="h-2 flex-1 rounded-full ${p.milestone2_status==='done'?'bg-[#17433a]':'bg-stone-200'}"></div>
+                        <div class="h-2 flex-1 rounded-full ${p.milestone3_status==='active'?'bg-[#b0955b]':'bg-stone-200'}"></div>
+                    </div>
+                </div>
+                <div class="lg:w-1/4">
+                    <p class="text-xs italic text-[#b0955b] font-black leading-snug">"${p.details || 'Operational oversight ongoing.'}"</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderNews(news) {
+    const container = document.getElementById('news-container');
+    container.innerHTML = news.map(n => `
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-100">
+            <p class="text-[8px] font-black text-[#b0955b] uppercase mb-1">${n.date || 'LATEST'}</p>
+            <h5 class="text-xs font-bold text-[#17433a] leading-tight">${n.title || 'Market Intelligence Update'}</h5>
+        </div>
+    `).join('');
 }
 
 function renderChart(holdings) {
@@ -161,7 +172,7 @@ function renderChart(holdings) {
     });
 }
 
-window.onload = loadData;
+window.onload = loadDashboard;
 </script>
 </body>
 </html>
