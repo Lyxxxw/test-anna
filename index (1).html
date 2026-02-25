@@ -61,6 +61,10 @@
 
         .chart-container { position: relative; width: 100%; height: 260px; }
 
+        .vibe-defensive { border-left: 5px solid #e5e7eb; } 
+        .vibe-growth { border-left: 5px solid var(--brand-gold); } 
+        .vibe-stable { border-left: 5px solid var(--sage-green); } 
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
         .strategy-inner { transition: transform 0.2s ease, box-shadow 0.2s ease; border: 2px solid transparent; border-radius: 1.5rem; }
@@ -132,13 +136,7 @@
     <aside class="w-full md:w-80 bg-white border-r border-stone-200 flex flex-col z-30 shadow-2xl overflow-y-auto hidden md:flex" id="sidebar">
         <div class="p-8">
             <div class="mb-10 cursor-pointer" onclick="window.open('https://realinternational.com/', '_blank')">
-                <div class='flex items-center gap-3'>
-                    <div class='w-12 h-12 border-2 border-[#b0955b] flex items-center justify-center text-[#b0955b] font-black text-2xl bg-[#17433a] rounded-lg shadow-sm'>R</div>
-                    <div>
-                        <h1 class='font-extrabold text-[#17433a] text-2xl leading-none tracking-tight italic'>REAL <span class='text-[#b0955b]'>INT'L</span></h1>
-                        <p class='text-[#717375] text-[0.6rem] font-bold uppercase tracking-[0.3em] mt-1'>Capital Advisory</p>
-                    </div>
-                </div>
+                <img id="company-logo" src="./logo.png" alt="Real International Logo" class="w-56 h-auto object-contain object-left" onerror="this.onerror=null; this.outerHTML='<div class=\\'flex items-center gap-3\\'><div class=\\'w-12 h-12 border-2 border-[#b0955b] flex items-center justify-center text-[#b0955b] font-black text-2xl bg-[#17433a] rounded-lg shadow-sm\\'>R</div><div><h1 class=\\'font-extrabold text-[#17433a] text-2xl leading-none tracking-tight italic\\'>REAL <span class=\\'text-[#b0955b]\\'>INT\\'L</span></h1><p class=\\'text-[#717375] text-[0.6rem] font-bold uppercase tracking-[0.3em] mt-1\\'>Capital Advisory</p></div></div>';" />
             </div>
 
             <nav class="space-y-2">
@@ -173,9 +171,8 @@
 
     <!-- Mobile Header -->
     <header class="md:hidden bg-white border-b border-stone-200 p-4 flex justify-between items-center z-20">
-        <div class='flex items-center gap-2'>
-            <div class='w-8 h-8 border border-[#b0955b] flex items-center justify-center text-[#b0955b] font-black text-sm bg-[#17433a] rounded-md'>R</div>
-            <h1 class='font-extrabold text-[#17433a] text-lg leading-none tracking-tight italic'>REAL <span class='text-[#b0955b]'>INT'L</span></h1>
+        <div class='flex items-center gap-2 cursor-pointer' onclick="window.open('https://realinternational.com/', '_blank')">
+            <img id="mobile-logo" src="./logo.png" alt="Real International Logo" class="h-8 w-auto object-contain" onerror="this.onerror=null; this.outerHTML='<div class=\\'flex items-center gap-2\\'><div class=\\'w-8 h-8 border border-[#b0955b] flex items-center justify-center text-[#b0955b] font-black text-sm bg-[#17433a] rounded-md\\'>R</div><h1 class=\\'font-extrabold text-[#17433a] text-lg leading-none tracking-tight italic\\'>REAL <span class=\\'text-[#b0955b]\\'>INT\\'L</span></h1></div>';" />
         </div>
         <button onclick="document.getElementById('sidebar').classList.toggle('hidden')" class="text-[#17433a] text-xl p-2"><i class="fa-solid fa-bars"></i></button>
     </header>
@@ -542,17 +539,41 @@
                     BASE_ALLOCATIONS[typeRaw] += parseNum(getVal(p, ['principal', 'investment', '本金', '投入本金']));
                 }
 
-                let vibeClass = "border-l-4 border-stone-300";
-                if(typeRaw.toLowerCase() === 'residential') vibeClass = "border-l-4 border-[#b0955b]";
-                else if(typeRaw.toLowerCase() === 'commercial') vibeClass = "border-l-4 border-[#99b2ac]";
-                else if(typeRaw.toLowerCase() === 'industrial') vibeClass = "border-l-4 border-[#17433a]";
-                else if(typeRaw.toLowerCase() === 'private debt') vibeClass = "border-l-4 border-[#717375]";
+                // 完美支持您截图中的 VIBE 列情绪控制
+                let vibeClass = getVal(p, ['vibe', '风格', '氛围']);
+                if (!vibeClass) {
+                    // 如果表格中没填 VIBE，按资产类型自动给兜底主题色
+                    if(typeRaw.toLowerCase() === 'residential') vibeClass = "vibe-growth";
+                    else if(typeRaw.toLowerCase() === 'commercial') vibeClass = "vibe-stable";
+                    else if(typeRaw.toLowerCase() === 'industrial') vibeClass = "border-l-4 border-[#17433a]";
+                    else if(typeRaw.toLowerCase() === 'private debt') vibeClass = "border-l-4 border-[#717375]";
+                    else vibeClass = "border-l-4 border-stone-300";
+                }
 
+                // VIBE 智能语义补全：根据氛围自动生成高逼格 IR 总结
+                let autoSummary = "Strategic holding positioned for targeted portfolio returns.";
+                const vStr = vibeClass.toLowerCase();
+                if (vStr.includes('growth')) {
+                    autoSummary = "Optimized for capital appreciation and high-growth yields.";
+                } else if (vStr.includes('stable') || vStr.includes('99b2ac')) {
+                    autoSummary = "Core stabilized asset delivering consistent and defensive cash flow.";
+                } else if (vStr.includes('defensive') || vStr.includes('717375')) {
+                    autoSummary = "Prioritizing principal protection and predictable income generation.";
+                }
+
+                // 里程碑智能抓取雷达
                 let milestones = [];
                 for(let i=1; i<=4; i++) {
-                    let mName = getVal(p, [`m${i}name`, `milestone${i}`, `milestone${i}name`, `里程碑${i}`]);
-                    let mStatus = getVal(p, [`m${i}status`, `milestone${i}status`, `状态${i}`, `里程碑${i}状态`]);
-                    if(mName) milestones.push({ n: mName, s: (mStatus || '').toLowerCase().trim() });
+                    // 完美兼容 MILESTONE1 或 Milestone 1 等写法
+                    let mName = getVal(p, [`milestone${i}`, `m${i}name`, `里程碑${i}`, `阶段${i}`]);
+                    let mStatus = getVal(p, [`milestone${i}status`, `m${i}status`, `状态${i}`, `里程碑${i}状态`]);
+                    
+                    if(mName) {
+                        let s = (mStatus || 'pending').toLowerCase().trim();
+                        // 防御机制：如果表格里拼错词，强制重置为 pending，防止界面崩溃
+                        if(!['done', 'active', 'pending'].includes(s)) s = 'pending';
+                        milestones.push({ n: mName, s: s });
+                    }
                 }
 
                 const timelineHtml = milestones.map((m, mIdx) => {
@@ -573,7 +594,11 @@
                 const dist = parseNum(getVal(p, ['distribution', 'distributions', '分红', '已发分红']));
                 const pName = getVal(p, ['projectname', 'name', '项目', '项目名称']) || 'Asset';
                 const pPrin = parseNum(getVal(p, ['principal', 'investment', '本金', '投入本金']));
-                const pSum = getVal(p, ['summary', '简介', '摘要', '概览']);
+                
+                let pSum = getVal(p, ['summary', '简介', '摘要', '概览']);
+                if (!pSum || pSum.trim() === '') {
+                    pSum = autoSummary; // 如果客户没填 Summary，自动用 VIBE 兜底！
+                }
                 const pDet = getVal(p, ['details', 'update', '详情', '更新', '管理更新']);
 
                 return `
