@@ -9,157 +9,227 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        :root { --brand-gold:#b0955b; --bg-cream:#f3eee4; --forest-green:#17433a; --sage-green:#99b2ac; --deep-black:#0a0a0b; }
+        :root { --brand-gold:#b0955b; --bg-cream:#f3eee4; --forest-green:#17433a; --sage-green:#99b2ac; --gray-text:#717375; --pure-white:#ffffff; --deep-black:#0a0a0b; }
         body { font-family:'Inter',sans-serif; background-color:var(--bg-cream); color:var(--deep-black); margin:0; -webkit-font-smoothing:antialiased; }
-        .glass-card { background:rgba(255,255,255,0.98); border:1px solid rgba(176,149,91,0.2); border-radius:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); }
-        .nav-active { background-color:var(--forest-green); color:white!important; font-weight:700; }
+        .nav-active { background-color:var(--forest-green); color:var(--pure-white)!important; box-shadow:0 10px 15px -3px rgba(23,67,58,0.3); font-weight:700; }
+        .glass-card { background:rgba(255,255,255,0.98); border:1px solid rgba(176,149,91,0.2); box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); border-radius:1.5rem; }
         .view-section { position:absolute; opacity:0; pointer-events:none; visibility:hidden; width:100%; }
         .view-section.active { position:relative; opacity:1; pointer-events:auto; visibility:visible; animation:fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        .loading-screen { position:fixed; inset:0; background:var(--bg-cream); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
-        .hidden { display: none !important; }
+        .loading-screen { position:fixed; inset:0; background:var(--bg-cream); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition: opacity 0.5s ease; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row h-screen overflow-hidden">
 
 <div id="loading-screen" class="loading-screen">
     <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#b0955b] mb-4"></i>
-    <p class="text-sm font-bold text-[#17433a] uppercase tracking-widest">Accessing RealInt Secure Vault...</p>
+    <p class="text-xs font-bold text-[#17433a] uppercase tracking-widest">Securely Fetching Your Portfolio...</p>
 </div>
 
 <aside class="w-full md:w-80 bg-white border-r border-stone-200 flex flex-col z-30 shadow-2xl overflow-y-auto">
     <div class="p-8">
-        <div class="mb-10"><h1 class="text-2xl font-black text-[#17433a]">REAL <span class="text-[#b0955b]">INT'L</span></h1></div>
+        <div class="mb-10"><h1 class="text-2xl font-black text-[#17433a] italic tracking-tighter">REAL <span class="text-[#b0955b]">INT'L</span></h1></div>
         <nav class="space-y-2">
             <button onclick="showSection('overview')" id="nav-overview" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm nav-active">
                 <i class="fa-solid fa-chart-line w-5"></i> Portfolio Snapshot
             </button>
-            <button onclick="showSection('portfolio')" id="nav-portfolio" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-stone-500">
+            <button onclick="showSection('portfolio')" id="nav-portfolio" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-[#717375] hover:bg-stone-50">
                 <i class="fa-solid fa-microscope w-5"></i> Asset Tracker
+            </button>
+            <button onclick="showSection('strategy')" id="nav-strategy" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-[#717375] hover:bg-stone-50">
+                <i class="fa-solid fa-flask-vial w-5"></i> Strategy Lab
             </button>
         </nav>
     </div>
     <div class="mt-auto p-8 border-t bg-stone-50">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-[#17433a] text-[#b0955b] flex items-center justify-center font-bold">AL</div>
+            <div class="w-12 h-12 rounded-xl bg-[#17433a] text-[#b0955b] flex items-center justify-center font-bold shadow-inner">AL</div>
             <div>
-                <p class="text-sm font-bold text-[#17433a]" id="client-name">Loading...</p>
-                <p class="text-[10px] text-[#717375] font-black uppercase italic" id="client-tier">VIP Investor</p>
+                <p class="text-sm font-bold text-[#17433a]" id="side-client-name">Anna Li</p>
+                <p class="text-[10px] text-[#b0955b] font-black uppercase italic" id="side-client-tier">Tier 1 VIP</p>
             </div>
         </div>
     </div>
 </aside>
 
-<main class="flex-1 overflow-y-auto p-6 md:p-10">
+<main class="flex-1 overflow-y-auto p-6 md:p-10 relative">
     <div id="section-overview" class="view-section active space-y-8">
         <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
             <div>
-                <h2 class="text-3xl font-black text-[#0a0a0b] uppercase italic">Institutional <span class="text-[#b0955b]">Snapshot</span></h2>
+                <h2 class="text-4xl font-black text-[#0a0a0b] uppercase italic tracking-tighter leading-none mb-2">Institutional <span class="text-[#b0955b]">Snapshot</span></h2>
+                <p class="text-[#717375] font-medium text-sm">Real-time performance analytics for your private equity holdings.</p>
             </div>
-            <div class="bg-[#17433a] px-8 py-5 rounded-2xl shadow-lg text-white border-b-4 border-[#b0955b]">
-                <p class="text-[#99b2ac] text-[10px] font-black uppercase italic mb-1">Total Active Principal</p>
-                <p class="text-3xl font-bold font-mono text-[#b0955b]" id="stat-principal">$0</p>
+            <div class="bg-[#17433a] px-10 py-6 rounded-3xl shadow-2xl border-b-4 border-[#b0955b]">
+                <p class="text-[#99b2ac] text-[10px] font-black uppercase italic tracking-widest mb-1">Total Active Principal</p>
+                <p class="text-4xl font-bold font-mono text-white" id="stat-total-principal">$0</p>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass-card p-6">
-                <p class="text-[#717375] text-[11px] font-black uppercase italic">Total Distributed</p>
-                <p class="text-3xl font-bold text-[#17433a] font-mono" id="stat-distributed">$0</p>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass-card p-8 min-h-[400px]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black text-sm uppercase italic text-[#17433a]">Portfolio Allocation</h3>
+                </div>
+                <div class="h-64 relative"><canvas id="allocationChart"></canvas></div>
             </div>
-            <div class="glass-card p-6">
-                <p class="text-[#717375] text-[11px] font-black uppercase italic">Asset Count</p>
-                <p class="text-3xl font-bold text-[#b0955b] font-mono" id="stat-count">0</p>
+            <div class="glass-card p-8 bg-[#17433a] border-none text-white">
+                <h3 class="font-black text-sm uppercase italic text-[#b0955b] mb-6 text-center">Asset Class Distribution</h3>
+                <div class="h-64 relative"><canvas id="proformaChart"></canvas></div>
             </div>
         </div>
     </div>
 
     <div id="section-portfolio" class="view-section space-y-8">
-        <header><h2 class="text-3xl font-black text-[#0a0a0b]">Asset Tracker</h2></header>
-        <div class="grid grid-cols-1 gap-6" id="portfolioList"></div>
+        <header><h2 class="text-3xl font-black text-[#0a0a0b] uppercase italic">Asset Tracker</h2></header>
+        <div class="grid grid-cols-1 gap-6" id="portfolioList">
+            </div>
+    </div>
+
+    <div id="section-strategy" class="view-section space-y-8">
+        <header><h2 class="text-3xl font-black text-[#0a0a0b] uppercase italic tracking-tighter">Strategy <span class="text-[#b0955b]">Lab</span></h2></header>
+        <div class="glass-card p-10 bg-white shadow-xl">
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-[#717375] mb-4 italic">Hypothetical Allocation ($)</label>
+                        <input type="range" id="simRange" min="100000" max="5000000" step="50000" value="1000000" 
+                               class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#b0955b]"
+                               oninput="runSim()">
+                        <div class="flex justify-between mt-4 font-mono font-bold text-xl text-[#17433a]">
+                            <span id="simVal">$1,000,000</span>
+                        </div>
+                    </div>
+                    <div class="p-8 bg-stone-50 rounded-3xl border border-stone-100">
+                        <p class="text-[10px] font-black uppercase text-[#717375] mb-2 italic tracking-widest text-center">Projected Annual Yield</p>
+                        <p class="text-5xl font-black text-[#17433a] text-center" id="simResult">$0</p>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4 p-6 bg-white border border-stone-100 rounded-2xl">
+                        <div class="w-10 h-10 rounded-full bg-[#f3eee4] flex items-center justify-center text-[#b0955b] shrink-0"><i class="fa-solid fa-bolt"></i></div>
+                        <div><h4 class="font-bold text-sm text-[#17433a]">Institutional Leverage</h4><p class="text-xs text-[#717375]">Optimized cash-on-cash returns via debt structuring.</p></div>
+                    </div>
+                </div>
+             </div>
+        </div>
     </div>
 </main>
 
 <script>
-// 配置区：使用你提供的部署链接
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzn2ONt_0sdSgyyBLcRl66qErl-a3wGu4mp_FvnBIUp0vAWwv6OmtGVA4SKElVjwTQ/exec';
+// ── CONFIG ──────────────────────────────────────────────────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypu3K0avOrDhYCn310pH94jYz2pv6JWCvc92Bsxz_ay70hpozFpCkzz3NE6El3H6zGkA/exec';
 const SECURITY_TOKEN = 'Real2026';
+
+let appData = { clients: [], holdings: [], news: [] };
+let allocChart, proChart;
 
 function showSection(id) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
     document.getElementById('section-' + id).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[#pure-white]', 'nav-active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
     document.getElementById('nav-' + id).classList.add('nav-active');
 }
 
-async function loadData() {
+// ── DATA FETCH ─────────────────────────────────────────────
+async function init() {
     const params = new URLSearchParams(window.location.search);
-    const clientId = params.get('id') || '317'; // 默认读取 317
+    const clientId = params.get('id') || '317';
 
     try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?id=${clientId}&token=${SECURITY_TOKEN}`);
-        const result = await res.json();
+        const response = await fetch(`${APPS_SCRIPT_URL}?id=${clientId}&token=${SECURITY_TOKEN}`);
+        const result = await response.json();
         
-        if (result.error) throw new Error(result.error);
-
-        // 这里的 result.allSheets 包含了表格里所有的页签数据
-        const holdings = result.allSheets["holdings"] || [];
-        const clientInfo = result.allSheets["clients"] ? result.allSheets["clients"][0] : null;
-
-        renderUI(clientInfo, holdings);
-        document.getElementById('loading-screen').classList.add('hidden');
+        if (result.allData) {
+            appData.clients = result.allData.clients || [];
+            appData.holdings = result.allData.holdings || [];
+            appData.news = result.allData.news || [];
+            
+            renderDashboard();
+            document.getElementById('loading-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading-screen').classList.add('hidden'), 500);
+        }
     } catch (e) {
-        console.error("Load Error:", e);
-        document.getElementById('loading-screen').innerHTML = `<p class="text-red-600 font-bold">Error: ${e.message}</p>`;
+        console.error("Data fetch failed:", e);
     }
 }
 
-function renderUI(client, projects) {
-    if (client) {
-        document.getElementById('client-name').innerText = client.name || "VIP Investor";
-        document.getElementById('client-tier').innerText = client.tier || "Private Client";
+function renderDashboard() {
+    // 1. Sidebar & Profile
+    if (appData.clients.length) {
+        const c = appData.clients[0];
+        document.getElementById('side-client-name').innerText = c.name || "VIP Investor";
+        document.getElementById('side-client-tier').innerText = c.tier || "Tier 1 VIP";
     }
 
-    // 计算汇总数据
-    let totalPrincipal = 0;
-    let totalDist = 0;
-    projects.forEach(p => {
-        totalPrincipal += Number(p.principal || 0);
-        totalDist += Number(p.distributed || 0);
-    });
+    // 2. Overview Stats
+    let total = 0;
+    appData.holdings.forEach(h => total += Number(h.principal || 0));
+    document.getElementById('stat-total-principal').innerText = '$' + total.toLocaleString();
 
-    document.getElementById('stat-principal').innerText = '$' + totalPrincipal.toLocaleString();
-    document.getElementById('stat-distributed').innerText = '$' + totalDist.toLocaleString();
-    document.getElementById('stat-count').innerText = projects.length;
-
-    // 渲染项目列表
+    // 3. Asset Tracker
     const list = document.getElementById('portfolioList');
-    list.innerHTML = projects.map(p => `
-        <div class="glass-card p-8 border-l-8 border-[#b0955b]">
+    list.innerHTML = appData.holdings.map(h => `
+        <div class="glass-card p-8 border-l-8 border-[#b0955b] bg-white transition-all hover:translate-x-2">
             <div class="flex flex-col lg:flex-row gap-8 items-center">
                 <div class="lg:w-1/4">
-                    <span class="text-[9px] font-black uppercase text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${p.type || 'Asset'}</span>
-                    <h4 class="text-xl font-black text-[#0a0a0b] mt-2">${p.project_name}</h4>
-                    <p class="text-sm font-mono font-bold text-[#17433a]">$${Number(p.principal).toLocaleString()}</p>
+                    <span class="text-[9px] font-black uppercase text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${h.type || 'Asset'}</span>
+                    <h4 class="text-xl font-black text-[#0a0a0b] mt-4 mb-2 uppercase italic">${h.project_name}</h4>
+                    <p class="text-sm font-mono font-bold text-[#17433a] italic">$${Number(h.principal).toLocaleString()}</p>
                 </div>
-                <div class="lg:w-2/4">
-                    <p class="text-[10px] font-bold text-[#717375] uppercase mb-2">Milestone: ${p.milestone3 || 'Yield Harvesting'}</p>
-                    <div class="flex gap-1">
-                        <div class="h-2 flex-1 rounded-full ${p.milestone1_status==='done'?'bg-[#b0955b]':'bg-stone-200'}"></div>
-                        <div class="h-2 flex-1 rounded-full ${p.milestone2_status==='done'?'bg-[#b0955b]':'bg-stone-200'}"></div>
-                        <div class="h-2 flex-1 rounded-full ${p.milestone3_status==='active'?'bg-[#17433a]':(p.milestone3_status==='done'?'bg-[#b0955b]':'bg-stone-200')}"></div>
+                <div class="lg:w-2/4 w-full">
+                    <p class="text-[10px] font-bold text-[#717375] uppercase mb-3 tracking-widest">Phase: ${h.milestone3 || 'Active'}</p>
+                    <div class="flex gap-1.5">
+                        <div class="h-2 flex-1 rounded-full ${h.milestone1_status==='done'?'bg-[#17433a]':'bg-stone-200'}"></div>
+                        <div class="h-2 flex-1 rounded-full ${h.milestone2_status==='done'?'bg-[#17433a]':'bg-stone-200'}"></div>
+                        <div class="h-2 flex-1 rounded-full ${h.milestone3_status==='active'?'bg-[#b0955b]':'bg-stone-200'}"></div>
                         <div class="h-2 flex-1 rounded-full bg-stone-200"></div>
                     </div>
                 </div>
-                <div class="lg:w-1/4">
-                    <p class="text-xs text-stone-600 italic">"${p.details || 'Active management in progress.'}"</p>
+                <div class="lg:w-1/4 text-right">
+                    <p class="text-xs italic text-[#b0955b] font-bold leading-relaxed">"${h.details || 'Active management.'}"</p>
                 </div>
             </div>
         </div>
     `).join('');
+
+    initCharts();
 }
 
-window.onload = loadData;
+function initCharts() {
+    const ctx1 = document.getElementById('allocationChart')?.getContext('2d');
+    const ctx2 = document.getElementById('proformaChart')?.getContext('2d');
+    if (!ctx1 || !appData.holdings.length) return;
+
+    if(allocChart) allocChart.destroy();
+    if(proChart) proChart.destroy();
+
+    const labels = appData.holdings.map(h => h.project_name);
+    const vals = appData.holdings.map(h => Number(h.principal));
+
+    allocChart = new Chart(ctx1, {
+        type: 'doughnut',
+        data: { labels: labels, datasets: [{ data: vals, backgroundColor: ['#17433a','#b0955b','#99b2ac','#717375','#0a0a0b'], borderWidth: 0, hoverOffset: 15 }] },
+        options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, font: { size: 10, weight: 'bold' } } } } }
+    });
+
+    proChart = new Chart(ctx2, {
+        type: 'pie',
+        data: { labels: labels, datasets: [{ data: vals, backgroundColor: ['#b0955b','#99b2ac','#ffffff','#717375'], borderWidth: 2, borderColor: '#17433a' }] },
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+}
+
+function runSim() {
+    const val = document.getElementById('simRange').value;
+    document.getElementById('simVal').innerText = '$' + Number(val).toLocaleString();
+    const result = val * 0.082; // 模拟 8.2% 的收益率
+    document.getElementById('simResult').innerText = '$' + Math.floor(result).toLocaleString();
+}
+
+window.onload = () => {
+    init();
+    runSim();
+};
 </script>
 </body>
 </html>
