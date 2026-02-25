@@ -9,112 +9,157 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        :root {
-            --brand-gold:#b0955b; --bg-cream:#f3eee4; --forest-green:#17433a;
-            --sage-green:#99b2ac; --gray-text:#717375; --pure-white:#ffffff; --deep-black:#0a0a0b;
-        }
-        body { font-family:'Inter',sans-serif; background-color:var(--bg-cream); color:var(--deep-black); margin:0; padding:0; -webkit-font-smoothing:antialiased; }
-        .nav-active { background-color:var(--forest-green); color:var(--pure-white)!important; box-shadow:0 10px 15px -3px rgba(23,67,58,0.3); font-weight:700; }
-        .glass-card { background:rgba(255,255,255,0.98); border:1px solid rgba(176,149,91,0.2); box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); border-radius:1.5rem; }
-        .view-section { position:absolute; opacity:0; pointer-events:none; visibility:hidden; z-index:-1; width:100%; }
-        .view-section.active { position:relative; opacity:1; pointer-events:auto; visibility:visible; z-index:1; animation:fadeIn 0.4s ease-out forwards; }
+        :root { --brand-gold:#b0955b; --bg-cream:#f3eee4; --forest-green:#17433a; --sage-green:#99b2ac; --deep-black:#0a0a0b; }
+        body { font-family:'Inter',sans-serif; background-color:var(--bg-cream); color:var(--deep-black); margin:0; -webkit-font-smoothing:antialiased; }
+        .glass-card { background:rgba(255,255,255,0.98); border:1px solid rgba(176,149,91,0.2); border-radius:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); }
+        .nav-active { background-color:var(--forest-green); color:white!important; font-weight:700; }
+        .view-section { position:absolute; opacity:0; pointer-events:none; visibility:hidden; width:100%; }
+        .view-section.active { position:relative; opacity:1; pointer-events:auto; visibility:visible; animation:fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         .loading-screen { position:fixed; inset:0; background:var(--bg-cream); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row h-screen overflow-hidden">
 
 <div id="loading-screen" class="loading-screen">
     <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#b0955b] mb-4"></i>
-    <p class="text-sm font-bold text-[#17433a] uppercase tracking-widest">Verifying Identity...</p>
-</div>
-
-<div id="error-screen" class="loading-screen hidden">
-    <p class="text-lg font-black text-[#17433a] mb-2">Access Denied</p>
-    <p class="text-sm text-[#717375]">Invalid Client link or Token. Please contact Anna.</p>
+    <p class="text-sm font-bold text-[#17433a] uppercase tracking-widest">Accessing RealInt Secure Vault...</p>
 </div>
 
 <aside class="w-full md:w-80 bg-white border-r border-stone-200 flex flex-col z-30 shadow-2xl overflow-y-auto">
     <div class="p-8">
-        <h1 class="text-[#17433a] font-black text-xl mb-10">REAL INTERNATIONAL</h1>
+        <div class="mb-10"><h1 class="text-2xl font-black text-[#17433a]">REAL <span class="text-[#b0955b]">INT'L</span></h1></div>
         <nav class="space-y-2">
             <button onclick="showSection('overview')" id="nav-overview" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm nav-active">
-                <i class="fa-solid fa-chart-line"></i> Portfolio Snapshot
+                <i class="fa-solid fa-chart-line w-5"></i> Portfolio Snapshot
+            </button>
+            <button onclick="showSection('portfolio')" id="nav-portfolio" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-stone-500">
+                <i class="fa-solid fa-microscope w-5"></i> Asset Tracker
             </button>
         </nav>
     </div>
     <div class="mt-auto p-8 border-t bg-stone-50">
-        <p class="text-sm font-bold text-[#17433a]" id="client-name">Loading...</p>
-        <p class="text-[10px] text-[#b0955b] font-black uppercase" id="client-tier"></p>
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-[#17433a] text-[#b0955b] flex items-center justify-center font-bold">AL</div>
+            <div>
+                <p class="text-sm font-bold text-[#17433a]" id="client-name">Loading...</p>
+                <p class="text-[10px] text-[#717375] font-black uppercase italic" id="client-tier">VIP Investor</p>
+            </div>
+        </div>
     </div>
 </aside>
 
-<main class="flex-1 overflow-y-auto p-10">
+<main class="flex-1 overflow-y-auto p-6 md:p-10">
     <div id="section-overview" class="view-section active space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass-card p-6 border-b-4 border-[#b0955b]">
-                <p class="text-[#717375] text-[11px] font-black uppercase">Active Principal</p>
-                <p class="text-3xl font-bold text-[#17433a]" id="stat-principal">—</p>
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
+            <div>
+                <h2 class="text-3xl font-black text-[#0a0a0b] uppercase italic">Institutional <span class="text-[#b0955b]">Snapshot</span></h2>
+            </div>
+            <div class="bg-[#17433a] px-8 py-5 rounded-2xl shadow-lg text-white border-b-4 border-[#b0955b]">
+                <p class="text-[#99b2ac] text-[10px] font-black uppercase italic mb-1">Total Active Principal</p>
+                <p class="text-3xl font-bold font-mono text-[#b0955b]" id="stat-principal">$0</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass-card p-6">
+                <p class="text-[#717375] text-[11px] font-black uppercase italic">Total Distributed</p>
+                <p class="text-3xl font-bold text-[#17433a] font-mono" id="stat-distributed">$0</p>
+            </div>
+            <div class="glass-card p-6">
+                <p class="text-[#717375] text-[11px] font-black uppercase italic">Asset Count</p>
+                <p class="text-3xl font-bold text-[#b0955b] font-mono" id="stat-count">0</p>
             </div>
         </div>
-        </div>
+    </div>
+
+    <div id="section-portfolio" class="view-section space-y-8">
+        <header><h2 class="text-3xl font-black text-[#0a0a0b]">Asset Tracker</h2></header>
+        <div class="grid grid-cols-1 gap-6" id="portfolioList"></div>
+    </div>
 </main>
 
 <script>
-// ── 配置区域 ──────────────────────────────────────────────────
-// 已替换为你刚才提供的新 URL
+// 配置区：使用你提供的部署链接
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzn2ONt_0sdSgyyBLcRl66qErl-a3wGu4mp_FvnBIUp0vAWwv6OmtGVA4SKElVjwTQ/exec';
-// 必须与你在 Apps Script 后端设置的 SECURITY_TOKEN 一致
-const SECURITY_TOKEN = 'Real2026'; 
+const SECURITY_TOKEN = 'Real2026';
 
 function showSection(id) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
     document.getElementById('section-' + id).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-[#pure-white]', 'nav-active'));
+    document.getElementById('nav-' + id).classList.add('nav-active');
 }
 
-async function loadDashboard() {
+async function loadData() {
     const params = new URLSearchParams(window.location.search);
-    const clientId = params.get('id');
-
-    if (!clientId) {
-        showError();
-        return;
-    }
+    const clientId = params.get('id') || '317'; // 默认读取 317
 
     try {
-        // 增加 token 参数进行身份验证
         const res = await fetch(`${APPS_SCRIPT_URL}?id=${clientId}&token=${SECURITY_TOKEN}`);
-        const data = await res.json();
+        const result = await res.json();
+        
+        if (result.error) throw new Error(result.error);
 
-        if (data.error) {
-            console.error(data.error);
-            showError();
-            return;
-        }
+        // 这里的 result.allSheets 包含了表格里所有的页签数据
+        const holdings = result.allSheets["holdings"] || [];
+        const clientInfo = result.allSheets["clients"] ? result.allSheets["clients"][0] : null;
 
-        renderDashboard(data);
+        renderUI(clientInfo, holdings);
         document.getElementById('loading-screen').classList.add('hidden');
-
-    } catch (err) {
-        showError();
+    } catch (e) {
+        console.error("Load Error:", e);
+        document.getElementById('loading-screen').innerHTML = `<p class="text-red-600 font-bold">Error: ${e.message}</p>`;
     }
 }
 
-function renderDashboard(data) {
-    const c = data.client;
-    document.getElementById('client-name').innerText = c.name || 'VIP Investor';
-    document.getElementById('client-tier').innerText = c.tier || 'Private Client';
-    
-    const fmt = v => v ? '$' + Number(v).toLocaleString() : '—';
-    document.getElementById('stat-principal').innerText = fmt(c.principal);
+function renderUI(client, projects) {
+    if (client) {
+        document.getElementById('client-name').innerText = client.name || "VIP Investor";
+        document.getElementById('client-tier').innerText = client.tier || "Private Client";
+    }
+
+    // 计算汇总数据
+    let totalPrincipal = 0;
+    let totalDist = 0;
+    projects.forEach(p => {
+        totalPrincipal += Number(p.principal || 0);
+        totalDist += Number(p.distributed || 0);
+    });
+
+    document.getElementById('stat-principal').innerText = '$' + totalPrincipal.toLocaleString();
+    document.getElementById('stat-distributed').innerText = '$' + totalDist.toLocaleString();
+    document.getElementById('stat-count').innerText = projects.length;
+
+    // 渲染项目列表
+    const list = document.getElementById('portfolioList');
+    list.innerHTML = projects.map(p => `
+        <div class="glass-card p-8 border-l-8 border-[#b0955b]">
+            <div class="flex flex-col lg:flex-row gap-8 items-center">
+                <div class="lg:w-1/4">
+                    <span class="text-[9px] font-black uppercase text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${p.type || 'Asset'}</span>
+                    <h4 class="text-xl font-black text-[#0a0a0b] mt-2">${p.project_name}</h4>
+                    <p class="text-sm font-mono font-bold text-[#17433a]">$${Number(p.principal).toLocaleString()}</p>
+                </div>
+                <div class="lg:w-2/4">
+                    <p class="text-[10px] font-bold text-[#717375] uppercase mb-2">Milestone: ${p.milestone3 || 'Yield Harvesting'}</p>
+                    <div class="flex gap-1">
+                        <div class="h-2 flex-1 rounded-full ${p.milestone1_status==='done'?'bg-[#b0955b]':'bg-stone-200'}"></div>
+                        <div class="h-2 flex-1 rounded-full ${p.milestone2_status==='done'?'bg-[#b0955b]':'bg-stone-200'}"></div>
+                        <div class="h-2 flex-1 rounded-full ${p.milestone3_status==='active'?'bg-[#17433a]':(p.milestone3_status==='done'?'bg-[#b0955b]':'bg-stone-200')}"></div>
+                        <div class="h-2 flex-1 rounded-full bg-stone-200"></div>
+                    </div>
+                </div>
+                <div class="lg:w-1/4">
+                    <p class="text-xs text-stone-600 italic">"${p.details || 'Active management in progress.'}"</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
-function showError() {
-    document.getElementById('loading-screen').classList.add('hidden');
-    document.getElementById('error-screen').classList.remove('hidden');
-}
-
-document.addEventListener('DOMContentLoaded', loadDashboard);
+window.onload = loadData;
 </script>
 </body>
 </html>
